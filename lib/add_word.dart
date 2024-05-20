@@ -130,6 +130,8 @@ class _AddWordScreenState extends State<AddWordScreen> {
         'imageUrl': _imageUrl,
         'audioUrl': _audioUrl,
         'englishSentences': englishSentences, // Add the English sentences
+        'stage': 1,
+        'lastKnownTime': null
       });
 
       setState(() {
