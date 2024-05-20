@@ -21,21 +21,15 @@ class mainScreen extends StatefulWidget {
 class _mainScreenState extends State<mainScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String username = "";
-  bool isAdmin = false;
 
   void initState() {
     super.initState();
     fetchUsername();
-    checkAdmin();
+
   }
 
   void fetchUsername() async {
     username = await UserUtilities.getUserName();
-    setState(() {});
-  }
-
-  void checkAdmin() async {
-    isAdmin = await UserUtilities.isCurrentUserAdmin();
     setState(() {});
   }
 
@@ -90,27 +84,17 @@ class _mainScreenState extends State<mainScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton.icon(
-              onPressed: isAdmin
-                  ? () {
+              onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => AddWordScreen()),
                 );
               }
-                  : () {
-                AppUtilities.showAlertDialog("İzin Hatası", "Kelime ekleme yetkiniz yok.", context);
-              },
+               ,
               icon: Icon(Icons.add),
               label: Text('Kelime Ekle'),
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) {
-                    if (isAdmin) {
-                      return Colors.blue; // Admin ise buton rengi mavi
-                    }
-                    return Colors.grey; // Admin değilse buton rengi gri
-                  },
-                ),
+
               ),
             ),
             SizedBox(height: 20),
