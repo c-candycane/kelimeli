@@ -117,7 +117,7 @@ class _UserPageState extends State<UserPage> {
     });
 
     setState(() {
-      uid = UserUtilities.getCurrentUser()!;
+      uid = UserUtilities.getCurrentUserUid()!;
     });
 
 

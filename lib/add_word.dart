@@ -82,22 +82,34 @@ class _AddWordScreenState extends State<AddWordScreen> {
     }
   }
 
-  Future<void> _uploadImage() async {
-    if (_image == null) return;
-    _imageUrl =  await StorageUtilities.uploadFile(
-        _imageUrl!, 'images', _englishController.text, 'jpg');
-  }
-
-  Future<void> _uploadAudio() async {
-    if (_audioUrl == null) return;
-
-    _audioUrl = await StorageUtilities.uploadFile(
-        _audioUrl!, 'sounds', _englishController.text, 'mp3');
-
-  }
-
   void _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
+
+    String englishWord = _englishController.text.toLowerCase();
+    List<String> englishSentences = _englishSentenceControllers.map((controller) => controller.text).toList();
+
+    // Remove punctuation and check if each sentence contains the English word
+    for (int i = 0; i < englishSentences.length; i++) {
+      String sanitizedSentence = englishSentences[i].replaceAll(RegExp(r'[^\w\s]'), '').toLowerCase();
+      if (!sanitizedSentence.contains(englishWord)) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Hata', style: AppUtilities.primaryTextStyleBlueLarge,),
+            content: Text('İngilizce kelime "${englishWord}" ${i + 1}. cümlede geçmiyor: "${englishSentences[i]}"', style: AppUtilities.primaryTextStyleWhite,),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Tamam'),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+    }
 
     setState(() {
       _isUploading = true;
@@ -106,40 +118,69 @@ class _AddWordScreenState extends State<AddWordScreen> {
     await _uploadImage();
     await _uploadAudio();
 
-    FirebaseFirestore.instance.collection('words').add({
-      'english': _englishController.text,
-      'turkish': _turkishController.text,
-      'imageUrl': _imageUrl,
-      'audioUrl': _audioUrl,
-    });
+    String? userUid = UserUtilities.getCurrentUserUid();
+    if (userUid != null) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(userUid)
+          .collection('words')
+          .add({
+        'english': _englishController.text,
+        'turkish': _turkishController.text,
+        'imageUrl': _imageUrl,
+        'audioUrl': _audioUrl,
+        'englishSentences': englishSentences, // Add the English sentences
+      });
 
-    setState(() {
-      _isUploading = false;
-    });
+      setState(() {
+        _isUploading = false;
+      });
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Yükleme tamamlandı'),
-        content: Text('Kelime başarıyla eklendi'),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _englishController.clear();
-              _turkishController.clear();
-              _image = null;
-              _imageUrl = null;
-              _audioUrl = null;
-              _selectedAudioFileName = null;
-              setState(() {});
-            },
-            child: Text('Tamam'),
-          ),
-        ],
-      ),
-    );
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Yükleme tamamlandı', style: AppUtilities.primaryTextStyleBlueLarge,),
+          content: Text('Kelime başarıyla eklendi', style: AppUtilities.primaryTextStyleWhite,),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _englishController.clear();
+                _turkishController.clear();
+                _image = null;
+                _imageUrl = null;
+                _audioUrl = null;
+                _selectedAudioFileName = null;
+                _englishSentenceControllers.clear();
+                setState(() {});
+              },
+              child: Text('Tamam'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      setState(() {
+        _isUploading = false;
+      });
+
+      AppUtilities.showAlertDialog("Hata", "Kullanıcı oturumu açık değil", context);
+    }
   }
+
+
+  Future<void> _uploadImage() async {
+    if (_image == null) return;
+    _imageUrl = await StorageUtilities.uploadFile(
+        _image!.path, 'images', _englishController.text, 'jpg');
+  }
+
+  Future<void> _uploadAudio() async {
+    if (_audioUrl == null) return;
+    _audioUrl = await StorageUtilities.uploadFile(
+        _audioUrl!, 'sounds', _englishController.text, 'mp3');
+  }
+
 
   Duration _duration = Duration();
   Duration _position = Duration();

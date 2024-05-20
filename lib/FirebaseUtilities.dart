@@ -61,7 +61,7 @@ class UserUtilities {
     );
   }
 
-  static String? getCurrentUser() {
+  static String? getCurrentUserUid() {
     return _auth.currentUser?.uid;
   }
 
