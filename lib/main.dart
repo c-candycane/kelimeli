@@ -1,5 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:kelimeli/AppUtilities.dart';
+import 'login_page.dart';
+import 'mainScreen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,17 +24,20 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: const ColorScheme(
-            brightness: Brightness.dark,
-            primary: Colors.white,
+            brightness: Brightness.light,
+            primary: Colors.blue,
             onPrimary: Color.fromRGBO(31, 44, 55, 1),
             secondary: Colors.blue,
-            onSecondary: Colors.white,
+            onSecondary: Colors.black,
             error: Colors.red,
             onError: Colors.red,
             background: Color.fromRGBO(31, 44, 55, 1),
             onBackground: Color.fromRGBO(31, 44, 55, 1),
-            surface: Colors.white,
-            onSurface: Colors.white),
+            surface: Colors.black,
+            onSurface: Colors.black,
+
+        ),
+
 
           scaffoldBackgroundColor: Color.fromRGBO(31, 44, 55, 1),
           appBarTheme: const AppBarTheme(
@@ -60,16 +69,7 @@ class MyApp extends StatelessWidget {
           primaryColor: Colors.blue,
           primarySwatch: Colors.blue,
           indicatorColor: Colors.blue,
-          primaryTextTheme: const TextTheme(
-            bodyMedium: TextStyle(color: Colors.white),
-            displayMedium: TextStyle(color: Colors.white),
-            labelMedium: TextStyle(color: Colors.white),
-            titleMedium: TextStyle(color: Colors.white),
-            bodySmall: TextStyle(color: Colors.white),
-            displaySmall: TextStyle(color: Colors.white),
-            labelSmall: TextStyle(color: Colors.white),
-            titleSmall: TextStyle(color: Colors.white),
-          ),
+
           listTileTheme: const ListTileThemeData(
             textColor: Colors.white,
           ),
@@ -79,6 +79,7 @@ class MyApp extends StatelessWidget {
           )),
           floatingActionButtonTheme: const FloatingActionButtonThemeData(
             backgroundColor: Colors.blue,
+
           )),
       home: const MyHomePage(),
     );
@@ -95,6 +96,37 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  Timer? _timer;
+
+  @override
+  void initState() {
+    User? user = FirebaseAuth.instance.currentUser;
+    super.initState();
+    if (user!=null){
+      _timer = Timer(const Duration(seconds: 2), () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => mainScreen(title: "user")),
+        );
+      });
+    }
+    else{
+      _timer = Timer(const Duration(seconds: 2), () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage(title: "firstMain")),
+        );
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
               left: 10,
               right: 10,
               child: Image.asset(
-                "images/kelimeli_logo.jpg",
+                AppUtilities.appLogoPath,
                 height: 220,
                 width: 180,
               ),
