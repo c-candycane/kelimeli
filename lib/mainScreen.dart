@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kelimeli/add_word.dart';
+import 'package:kelimeli/analysis_page.dart';
 import 'package:kelimeli/quiz_page.dart';
 import 'package:kelimeli/user_page.dart';
 
@@ -112,7 +113,10 @@ class _mainScreenState extends State<mainScreen> {
             SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () {
-                // Analiz ekranına yönlendirme
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AnalysisPage()),
+                );
               },
               icon: Icon(Icons.analytics),
               label: Text('Analiz'),

@@ -19,13 +19,13 @@ class _QuizPageState extends State<QuizPage> {
   AudioPlayer _audioPlayer = AudioPlayer();
   late StreamSubscription _playerStateSubscription;
   bool _noMoreQuestions = false;
-  late final String? imageUrl;
-  late final String? audioUrl;
-  late final String displayText;
-  late final currentQuestion;
-  late final bool isSentence;
-  late final bool isDisplayTextSentence;
-
+  late String? imageUrl;
+  late String? audioUrl;
+  late String displayText;
+  late var currentQuestion;
+  late bool isDisplayTextSentence;
+  bool isQuizGenerated=false;
+  late final questions;
   @override
   void initState() {
     super.initState();
@@ -50,6 +50,15 @@ class _QuizPageState extends State<QuizPage> {
 
     final now = DateTime.now();
     final firestore = FirebaseFirestore.instance;
+
+    // Kullanıcının belirlediği soru sayısını almak için Firestore'dan veriyi getir
+    final userDocSnapshot = await firestore.collection('users').doc(userUid).get();
+    if (!userDocSnapshot.exists) return [];
+
+    final userData = userDocSnapshot.data();
+    if (userData == null || !userData.containsKey('questionCount')) return [];
+
+    final int questionCount = userData['questionCount'] as int;
 
     final querySnapshot = await firestore
         .collection('users')
@@ -85,33 +94,40 @@ class _QuizPageState extends State<QuizPage> {
     }).toList();
 
     questions.shuffle();
-    return questions.take(10).map((doc) => {
+    print(questionCount);
+    return questions.take(questionCount).map((doc) => {
       ...doc.data(),
       'id': doc.id
     }).toList();
   }
 
+
   Future<void> _loadQuestions() async {
-    final questions = await _getQuizQuestions();
+
+    if (!isQuizGenerated){
+       questions = await _getQuizQuestions();
+       isQuizGenerated=true;
+    }
+
     setState(() {
       _questions = questions;
       if (_questions.isEmpty) {
         _noMoreQuestions = true;
       } else {
-        _currentQuestionIndex = 0;
+        print(_currentQuestionIndex);
+        print(_questions.length);
         currentQuestion = _questions[_currentQuestionIndex];
 
-        isSentence =
-            currentQuestion['englishSentences'] != null && currentQuestion['englishSentences'].isNotEmpty;
+
         List<String> options = [];
 
-        if (isSentence) {
-          for (var sentence in currentQuestion['englishSentences']) {
-            if (sentence is String) {
-              options.add(sentence);
-            }
+
+        for (var sentence in currentQuestion['englishSentences']) {
+          if (sentence is String) {
+            options.add(sentence);
           }
         }
+
 
         if (currentQuestion['turkish'] != null && currentQuestion['turkish'].isNotEmpty) {
           options.add(currentQuestion['turkish'].toString());
@@ -247,6 +263,10 @@ class _QuizPageState extends State<QuizPage> {
                   setState(() {
                     _answerController.clear();
                     _currentQuestionIndex++;
+
+                    if (_currentQuestionIndex < _questions.length) {
+                      _loadQuestions(); // Bir sonraki soruyu yükle
+                    }
                   });
                 },
               ),
@@ -285,6 +305,9 @@ class _QuizPageState extends State<QuizPage> {
         _isPlaying = false;
       }
     }
+  }
+  Widget _buildAppBarTitle() {
+    return Text('Quiz - Soru ${_currentQuestionIndex + 1}/${_questions.length}');
   }
 
   @override
@@ -358,8 +381,9 @@ class _QuizPageState extends State<QuizPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quiz'),
+        title: _buildAppBarTitle(),
       ),
+
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -373,7 +397,7 @@ class _QuizPageState extends State<QuizPage> {
                     _playAudio(audioUrl);
                   },
                 ),
-              if (isSentence)
+              if (isDisplayTextSentence)
                 RichText(
                   text: TextSpan(
                     children: _buildSentenceWithHighlightedWord(displayText, currentQuestion['english']),

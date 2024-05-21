@@ -7,9 +7,15 @@ class AppUtilities {
   static const Color backgroundColor = Color.fromRGBO(31, 44, 55, 1);
   static const Color primaryButtonColor = Colors.blue;
   static const String appLogoPath = "images/kelimeli_logo.jpg";
+
   static const TextStyle primaryTextStyleWhite = TextStyle(
     color: Colors.white,
     fontSize: 20
+  );
+  static const TextStyle primaryTextStyleWhiteBold = TextStyle(
+      color: Colors.white,
+      fontWeight: FontWeight.bold,
+      fontSize: 20
   );
   static const TextStyle primaryTextStyleWhiteSmall = TextStyle(
       color: Colors.white,
@@ -40,6 +46,11 @@ class AppUtilities {
       color: Colors.blue,
       fontWeight: FontWeight.bold,
       fontSize: 26
+  );
+  static const TextStyle primaryTextStyleBlueItalic = TextStyle(
+      color: Colors.blue,
+      fontStyle: FontStyle.italic,
+      fontSize: 18
   );
 
   static String removeSpaces(String input) {

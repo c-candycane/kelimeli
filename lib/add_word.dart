@@ -6,7 +6,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:audioplayers/audioplayers.dart' as audioplayers;
 import 'package:kelimeli/AppUtilities.dart';
 
 import 'FirebaseUtilities.dart';
@@ -20,8 +19,10 @@ class _AddWordScreenState extends State<AddWordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _englishController = TextEditingController();
   final _turkishController = TextEditingController();
-  final _englishSentencesController = TextEditingController();
-  List<TextEditingController> _englishSentenceControllers = [];// New controller for English sentences
+  List<TextEditingController> _englishSentenceControllers = [
+    TextEditingController(),
+    TextEditingController()
+  ]; // İlk iki cümle kontrolcüsü
   File? _image;
   String? _imageUrl;
   String? _audioUrl;
@@ -77,7 +78,7 @@ class _AddWordScreenState extends State<AddWordScreen> {
         _audioUrl = file.path;
         _selectedAudioFileName = file.path
             .split('/')
-            .last; // Get the file name
+            .last; // Dosya adını alın
       });
     }
   }
@@ -88,7 +89,7 @@ class _AddWordScreenState extends State<AddWordScreen> {
     String englishWord = _englishController.text.toLowerCase();
     List<String> englishSentences = _englishSentenceControllers.map((controller) => controller.text).toList();
 
-    // Remove punctuation and check if each sentence contains the English word
+    // Noktalama işaretlerini kaldır ve her cümlenin İngilizce kelimeyi içerip içermediğini kontrol et
     for (int i = 0; i < englishSentences.length; i++) {
       String sanitizedSentence = englishSentences[i].replaceAll(RegExp(r'[^\w\s]'), '').toLowerCase();
       if (!sanitizedSentence.contains(englishWord)) {
@@ -129,9 +130,10 @@ class _AddWordScreenState extends State<AddWordScreen> {
         'turkish': _turkishController.text,
         'imageUrl': _imageUrl,
         'audioUrl': _audioUrl,
-        'englishSentences': englishSentences, // Add the English sentences
+        'englishSentences': englishSentences, // İngilizce cümleleri ekleyin
         'stage': 1,
-        'lastKnownTime': null
+        'lastKnownTime': null,
+        'category': _selectedCategory
       });
 
       setState(() {
@@ -154,6 +156,8 @@ class _AddWordScreenState extends State<AddWordScreen> {
                 _audioUrl = null;
                 _selectedAudioFileName = null;
                 _englishSentenceControllers.clear();
+                _englishSentenceControllers.add(TextEditingController());
+                _englishSentenceControllers.add(TextEditingController());
                 setState(() {});
               },
               child: Text('Tamam'),
@@ -170,7 +174,6 @@ class _AddWordScreenState extends State<AddWordScreen> {
     }
   }
 
-
   Future<void> _uploadImage() async {
     if (_image == null) return;
     _imageUrl = await StorageUtilities.uploadFile(
@@ -183,13 +186,12 @@ class _AddWordScreenState extends State<AddWordScreen> {
         _audioUrl!, 'sounds', _englishController.text, 'mp3');
   }
 
-
   Duration _duration = Duration();
   Duration _position = Duration();
   bool _isPlaying = false;
 
   void _playAudio() async {
-    if (_audioUrl!= null) {
+    if (_audioUrl != null) {
       if (!_isPlaying) {
         await _audioPlayer.play(UrlSource(_audioUrl!));
         _isPlaying = true;
@@ -216,14 +218,15 @@ class _AddWordScreenState extends State<AddWordScreen> {
     });
   }
 
-  // Method to remove a specific English sentence section
+  // Belirli bir İngilizce cümle alanını kaldırmak için method
   void _removeEnglishSentenceField(int index) {
-    setState(() {
-      _englishSentenceControllers.removeAt(index);
-    });
+    if (_englishSentenceControllers.length > 2) {
+      setState(() {
+        _englishSentenceControllers.removeAt(index);
+      });
+    }
   }
-
-
+  String _selectedCategory = 'Hayvanlar';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -270,7 +273,6 @@ class _AddWordScreenState extends State<AddWordScreen> {
                     borderSide: BorderSide(color: Colors.blue),
                   ),
                 ),
-
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Lütfen bir Türkçe karşılık girin';
@@ -280,7 +282,50 @@ class _AddWordScreenState extends State<AddWordScreen> {
                 style: AppUtilities.primaryTextStyleWhite,
               ),
               SizedBox(height: 20),
-              // ListView to dynamically display English sentence sections
+              // Diğer form alanları buraya eklenecek
+              DropdownButtonFormField<String>(
+                value: _selectedCategory,
+                items: [
+                  'Hayvanlar',
+                  'Renkler',
+                  'Yiyecekler',
+                  'Meslekler',
+                  'Giysiler',
+                  'Ulaşım Araçları',
+                  'Mutfak Eşyaları',
+                  'Doğa Elementleri',
+                  'Saatler ve Zaman',
+                  'Ev Eşyaları',
+                  'Meyve ve Sebzeler',
+                  'Vücut Parçaları',
+                  'Sporlar',
+                  'Mekanlar',
+                  'Müzik Aletleri',
+                  'Diğer'
+                ].map((String category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList(),
+                onChanged: (String? value) {
+                  setState(() {
+                    _selectedCategory = value!;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'Kategori',
+                  labelStyle: TextStyle(color: Colors.blue),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue),
+                  ),
+                ),
+                style: AppUtilities.primaryTextStyleWhite,
+              ),
+              SizedBox(height: 20),
               ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
@@ -301,24 +346,29 @@ class _AddWordScreenState extends State<AddWordScreen> {
                               borderSide: BorderSide(color: Colors.blue),
                             ),
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Lütfen bir cümle girin';
+                            }
+                            return null;
+                          },
                           style: AppUtilities.primaryTextStyleWhite,
                         ),
                       ),
-                      IconButton(
-                        icon: Icon(Icons.remove_circle),
-                        onPressed: () => _removeEnglishSentenceField(index),
-                      ),
+                      if (_englishSentenceControllers.length > 2)
+                        IconButton(
+                          icon: Icon(Icons.remove_circle),
+                          onPressed: () => _removeEnglishSentenceField(index),
+                        ),
                     ],
                   );
                 },
               ),
               SizedBox(height: 20),
-              // Button to add a new English sentence section
               ElevatedButton(
                 onPressed: _addEnglishSentenceField,
                 child: Text('İngilizce Cümle Ekle'),
               ),
-              // Existing widgets...
               _image == null
                   ? ElevatedButton.icon(
                 onPressed: _getImage,
@@ -383,5 +433,4 @@ class _AddWordScreenState extends State<AddWordScreen> {
       ),
     );
   }
-
 }
