@@ -76,8 +76,8 @@ class _RegisterPageState extends State<RegisterPage> {
         AppUtilities.showAlertDialog(
             'Hata',
             'Şifre güvenliği zayıf! Şifre en az 8 karakter uzunluğunda olmalı ve '
-                'en az bir büyük harf, bir küçük harf, bir sayı ve bir özel '
-                'karakter içermelidir.', context);
+                'en az bir büyük harf, bir küçük harf, ve bir sayı '
+                'içermelidir.', context);
       }
     } else {
       AppUtilities.showAlertDialog(
@@ -104,12 +104,23 @@ class _RegisterPageState extends State<RegisterPage> {
       if (userCredential.user != null) {
         String userId = userCredential.user!.uid;
 
+        // Yeni kullanıcı belgesini oluştur
         await FirebaseFirestore.instance.collection('users').doc(userId).set({
           'firstName': firstName,
           'lastName': lastName,
-          'email' : email,
+          'email': email,
           'questionCount': 10,
         });
+
+        final wordsSnapshot = await FirebaseFirestore.instance.collection('words').get();
+        for (var wordDoc in wordsSnapshot.docs) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .collection('words')
+              .doc(wordDoc.id)
+              .set(wordDoc.data());
+        }
 
         print('Kullanıcı oluşturuldu: $userId');
         Navigator.pushAndRemoveUntil(
@@ -135,7 +146,7 @@ class _RegisterPageState extends State<RegisterPage> {
             errorMessage = 'Bir hata oluştu. Lütfen tekrar deneyin.';
             break;
         }
-        if (e.code == 'email-already-in-use' ) {
+        if (e.code == 'email-already-in-use') {
           AppUtilities.showAlertDialogAndNavigate('Hata', errorMessage, "LoginPage", email, context);
           return;
         }
@@ -147,6 +158,7 @@ class _RegisterPageState extends State<RegisterPage> {
       });
     }
   }
+
 
 
   @override

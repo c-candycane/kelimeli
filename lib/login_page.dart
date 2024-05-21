@@ -255,6 +255,16 @@ class _LoginPageState extends State<LoginPage> {
               'email' : email,
               'questionCount': 10,
             });
+            final wordsSnapshot = await FirebaseFirestore.instance.collection('words').get();
+            for (var wordDoc in wordsSnapshot.docs) {
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(userId)
+                  .collection('words')
+                  .doc(wordDoc.id)
+                  .set(wordDoc.data());
+            }
+
           }
           Navigator.pushReplacement(
             context,

@@ -8,12 +8,13 @@ class Answer {
   final int correctCount;
   final int wrongCount;
   final bool isCorrect;
-
+  final Timestamp answerDate;
   Answer({
     required this.questionId,
     required this.correctCount,
     required this.wrongCount,
     required this.isCorrect,
+    required this.answerDate,
   });
 
   factory Answer.fromDocument(DocumentSnapshot doc) {
@@ -23,6 +24,7 @@ class Answer {
       correctCount: data['correctCount'] ?? 0,
       wrongCount: data['wrongCount'] ?? 0,
       isCorrect: data['isCorrect'] ?? false,
+        answerDate: data['answerDate']
 
     );
   }
@@ -45,6 +47,7 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
   Map<String, String> _wordCorrectAnswerCount = {};
   Map<String, String> _wordWrongAnswerCount = {};
   Map<String, bool> _wordLastAnswer = {};
+  Map<String, Timestamp> _wordAnswerDate = {};
   @override
   void initState() {
     super.initState();
@@ -92,6 +95,7 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
     final wordCorrectAnswerCount = {for (var answer in answers) answer.questionId: (answer.correctCount).toString()};
     final wordWrongAnswerCount = {for (var answer in answers) answer.questionId: (answer.wrongCount).toString()};
     final wordLastAnswer = {for (var answer in answers) answer.questionId: answer.isCorrect};
+    final wordAnswerDate = {for (var answer in answers) answer.questionId: answer.answerDate};
     setState(() {
       _categoryAnswers = categoryAnswers;
       _wordTranslations = wordTranslations.cast<String, String>();
@@ -99,6 +103,7 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
       _wordCorrectAnswerCount = wordCorrectAnswerCount.cast<String, String>();
       _wordWrongAnswerCount = wordWrongAnswerCount.cast<String, String>();
       _wordLastAnswer = wordLastAnswer.cast<String, bool>();
+      _wordAnswerDate = wordAnswerDate.cast<String, Timestamp>();
     });
   }
 
@@ -122,6 +127,7 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
           final correctCount = _wordCorrectAnswerCount[answer.questionId] ?? 'Unknown';
           final wrongCount = _wordWrongAnswerCount[answer.questionId] ?? 'Unknown';
           final isLastAnswerTrue = _wordLastAnswer[answer.questionId] ?? false;
+          final wordLastAnswerDate  = _wordAnswerDate[answer.questionId];
           print(isLastAnswerTrue);
           return Padding(
             padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -151,6 +157,10 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
                 Text(
                   '${isLastAnswerTrue ? 'Doğru' : 'Yanlış'}',
                   style: TextStyle(fontSize: 16, color: isLastAnswerTrue ? Colors.green : Colors.red, fontStyle: FontStyle.italic),
+                ),
+                Text(
+                  'Son Cevap Zamanı: ${wordLastAnswerDate?.toDate()} ',
+                  style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   'Doğru Cevap Yüzdesi: ${_calculateWordCorrectPercentage(answer).toStringAsFixed(2)}%',

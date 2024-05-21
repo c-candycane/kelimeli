@@ -26,11 +26,11 @@ class InfoScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Yapımcı:',
+              'Yapımcılar:',
               style: AppUtilities.primaryTextStyleWhite,
             ),
             Text(
-              'Hüseyin ÖZCAN',
+              'Hüseyin ÖZCAN\nM. Umut ŞİBARA',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -56,7 +56,7 @@ class InfoScreen extends StatelessWidget {
               style: AppUtilities.primaryTextStyleWhite,
             ),
             Text(
-              '2024 Version 2',
+              '2024 Version 6',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,

@@ -74,12 +74,11 @@ class UserUtilities {
     RegExp uppercaseRegex = RegExp(r'[A-Z]');
     RegExp lowercaseRegex = RegExp(r'[a-z]');
     RegExp digitRegex = RegExp(r'[0-9]');
-    RegExp specialCharRegex = RegExp(r'[!_@#$%^&*(),.?":{}|<>-]');
+
 
     return uppercaseRegex.hasMatch(password) &&
         lowercaseRegex.hasMatch(password) &&
-        digitRegex.hasMatch(password) &&
-        specialCharRegex.hasMatch(password);
+        digitRegex.hasMatch(password);
   }
 
   static bool isValidName(String name) {
