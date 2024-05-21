@@ -47,7 +47,6 @@ class AppUtilities {
   }
 
 
-
   static void showAlertDialog(String title, String message, context) {
     showDialog(
       context: context,
