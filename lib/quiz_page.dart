@@ -25,6 +25,7 @@ class _QuizPageState extends State<QuizPage> {
   late final currentQuestion;
   late final bool isSentence;
   late final bool isDisplayTextSentence;
+
   @override
   void initState() {
     super.initState();
@@ -100,7 +101,8 @@ class _QuizPageState extends State<QuizPage> {
         _currentQuestionIndex = 0;
         currentQuestion = _questions[_currentQuestionIndex];
 
-        isSentence = currentQuestion['englishSentences'] != null && currentQuestion['englishSentences'].isNotEmpty;
+        isSentence =
+            currentQuestion['englishSentences'] != null && currentQuestion['englishSentences'].isNotEmpty;
         List<String> options = [];
 
         if (isSentence) {
@@ -129,7 +131,6 @@ class _QuizPageState extends State<QuizPage> {
     });
   }
 
-
   Future<void> _submitAnswer() async {
     final currentQuestion = _questions[_currentQuestionIndex];
     final userAnswer = _answerController.text.trim();
@@ -138,12 +139,7 @@ class _QuizPageState extends State<QuizPage> {
     if (userUid == null) return;
 
     final firestore = FirebaseFirestore.instance;
-    final docRef = firestore
-        .collection('users')
-        .doc(userUid)
-        .collection('words')
-        .doc(currentQuestion['id']);
-
+    final docRef = firestore.collection('users').doc(userUid).collection('words').doc(currentQuestion['id']);
 
     final docSnapshot = await docRef.get();
     if (!docSnapshot.exists) {
@@ -151,43 +147,39 @@ class _QuizPageState extends State<QuizPage> {
       return;
     }
 
+    bool isCorrect = false;
+    String correctAnswer = '';
+
     try {
       if (isDisplayTextSentence) {
-
-        final correctAnswer = currentQuestion['turkish'];
+        correctAnswer = currentQuestion['turkish'];
         if (userAnswer.toLowerCase() == correctAnswer.toLowerCase()) {
-          // Doğru cevap
+          isCorrect = true;
           final newStage = (currentQuestion['stage'] as int) + 1;
           if (newStage <= 8) {
             await docRef.update({
               'stage': newStage,
               'lastKnownTime': FieldValue.serverTimestamp(),
             });
-          } else {
           }
         } else {
-
           await docRef.update({
             'stage': 1,
             'lastKnownTime': null,
           });
         }
       } else {
-
-        final correctAnswer = currentQuestion['english'];
+        correctAnswer = currentQuestion['english'];
         if (userAnswer.toLowerCase() == correctAnswer.toLowerCase()) {
-
+          isCorrect = true;
           final newStage = (currentQuestion['stage'] as int) + 1;
           if (newStage <= 8) {
             await docRef.update({
               'stage': newStage,
               'lastKnownTime': FieldValue.serverTimestamp(),
             });
-          } else {
-
           }
         } else {
-
           await docRef.update({
             'stage': 1,
             'lastKnownTime': null,
@@ -195,14 +187,78 @@ class _QuizPageState extends State<QuizPage> {
         }
       }
 
-      setState(() {
-        _answerController.clear();
-        _currentQuestionIndex++;
-      });
+      // Cevap bilgilerini 'answers' koleksiyonunda güncelle veya ekle
+      final answerDocRef = firestore.collection('users').doc(userUid).collection('answers').doc(currentQuestion['id']);
+
+      // Mevcut cevap bilgilerini al
+      final answerSnapshot = await answerDocRef.get();
+
+      if (answerSnapshot.exists) {
+        // Mevcut cevap bilgilerini güncelle
+        await answerDocRef.update({
+          'questionId': currentQuestion['id'],
+          'isCorrect': isCorrect,
+          'answerDate': FieldValue.serverTimestamp(),
+          'correctCount': isCorrect
+              ? FieldValue.increment(1)
+              : answerSnapshot.data()?['correctCount'] ?? 0,
+          'wrongCount': !isCorrect
+              ? FieldValue.increment(1)
+              : answerSnapshot.data()?['wrongCount'] ?? 0,
+        });
+      } else {
+        // Yeni cevap bilgisi ekle
+        await answerDocRef.set({
+          'questionId': currentQuestion['id'],
+          'isCorrect': isCorrect,
+          'answerDate': FieldValue.serverTimestamp(),
+          'correctCount': isCorrect ? 1 : 0,
+          'wrongCount': !isCorrect ? 1 : 0,
+        });
+      }
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Row(
+              children: [
+                Icon(
+                  isCorrect ? Icons.check : Icons.close,
+                  color: isCorrect ? Colors.green : Colors.red,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  isCorrect ? 'Cevabınız Doğru' : 'Cevabınız Yanlış',
+                  style: AppUtilities.primaryTextStyleBlue,
+                ),
+              ],
+            ),
+            content: Text(
+              isCorrect ? 'Tebrikler! Cevabınız doğru.' : 'Doğru cevap: $correctAnswer',
+              style: AppUtilities.primaryTextStyleWhite,
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Tamam'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+
+                  setState(() {
+                    _answerController.clear();
+                    _currentQuestionIndex++;
+                  });
+                },
+              ),
+            ],
+          );
+        },
+      );
     } catch (error) {
       print('Hata oluştu: $error');
     }
   }
+
 
 
   Duration _duration = Duration();
@@ -253,7 +309,6 @@ class _QuizPageState extends State<QuizPage> {
                 style: AppUtilities.primaryTextStyleWhiteSmallItalic,
                 textAlign: TextAlign.center,
               ),
-
             ],
           ),
         ),
@@ -282,8 +337,6 @@ class _QuizPageState extends State<QuizPage> {
       );
     }
 
-
-
     List<InlineSpan> _buildSentenceWithHighlightedWord(String sentence, String wordToHighlight) {
       final RegExp wordRegExp = RegExp(r"[\wğüşıöçĞÜŞİÖÇ']+|[.,!?;]");
       final List<String> words = wordRegExp.allMatches(sentence).map((match) => match.group(0)!).toList();
@@ -302,7 +355,6 @@ class _QuizPageState extends State<QuizPage> {
         }
       }).toList();
     }
-
 
     return Scaffold(
       appBar: AppBar(
@@ -335,7 +387,7 @@ class _QuizPageState extends State<QuizPage> {
               TextField(
                 controller: _answerController,
                 decoration: InputDecoration(
-                  labelText: isDisplayTextSentence ? 'Türkçe Cevap':'İngilizce Cevap',
+                  labelText: isDisplayTextSentence ? 'Türkçe Cevap' : 'İngilizce Cevap',
                   labelStyle: AppUtilities.primaryTextStyleWhite,
                 ),
                 style: AppUtilities.primaryTextStyleWhiteXLarge,
