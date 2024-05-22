@@ -44,17 +44,27 @@ Kelimeli is a mobile application designed to make your vocabulary learning proce
 **Progress:** View your percentage of correct answers by category. When you click on the category, you can view detailed analysis of the words in that category.  
 **Print:** Print these analyzes as csv from the analysis page.
 ## Screenshots
+
 **Main Screen**
+
 ![image](https://github.com/c-candycane/kelimeli/assets/108942127/b5f797d7-2e50-40de-bca6-ffc4a2b335e8)
+
+
 
 **Add Word Screen**
 ![image](https://github.com/c-candycane/kelimeli/assets/108942127/89b87226-74ad-4aa1-ba12-5f879e866ac5)
 
+
+
 **Quiz Screen**
 ![image](https://github.com/c-candycane/kelimeli/assets/108942127/c8e87d62-4212-41b6-b336-2eebd18a5606)
 
+
+
 **Analysis Screen**
 ![image](https://github.com/c-candycane/kelimeli/assets/108942127/7cdb1cf8-bd78-4866-8c82-5f97fb4b8e89)
+
+
 ![image](https://github.com/c-candycane/kelimeli/assets/108942127/ee9ada07-9b30-46f3-9931-78446649eae8)
 
 
