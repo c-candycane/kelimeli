@@ -15,13 +15,15 @@ Kelimeli is a mobile application designed to make your vocabulary learning proce
    git clone https://github.com/username/kelimeli-quiz.git
    
 2. **Install the required packages:**
+   ```bash
    cd kelimeli-quiz
    flutter pub get
 
 3. **Configure Firebase:**
-
+   
     Create a project in Firebase Console.
     Download the Firebase configuration files for Android and iOS (google-services.json and GoogleService-Info.plist) and place them in the appropriate directories in your project.
 
 4. Run the application:
+   ```bash
    flutter run
