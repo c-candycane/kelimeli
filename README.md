@@ -72,3 +72,5 @@ Kelimeli is a mobile application designed to make your vocabulary learning proce
 ![image](https://github.com/c-candycane/kelimeli/assets/108942127/ee9ada07-9b30-46f3-9931-78446649eae8)
 
 
+## Contact  
+Email: huseyinozcan5507@hotmail.com
