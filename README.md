@@ -29,16 +29,16 @@ Kelimeli is a mobile application designed to make your vocabulary learning proce
    flutter run
 
 
-USAGE
-ADDING WORDS
+## USAGE
+## ADDING WORDS
 Navigate to Add Word Screen: Tap on the "Add Word" button on the main screen.
 Enter Word and Meanings: Enter the English word, its Turkish meaning, and optionally an example sentence.
 Save: Tap on the "Save" button to add the word.
-QUIZ
+# #QUIZ
 Navigate to Quiz Screen: Tap on the "Quiz" button on the main screen.
 Question: A question will be displayed on the screen. Enter the answer in the provided field.
 Submit Answer: Tap on the "Submit" button to submit your answer. You will receive feedback on whether your answer is correct or incorrect.
 Next Question: After answering, proceed to the next question. Continue until all questions are answered.
-ANALYSIS
+## ANALYSIS
 Navigate to Analysis Screen: Tap on the "Analysis" button on the main screen.
 Progress: View your learning statistics such as learned words, correct and incorrect answers.
