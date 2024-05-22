@@ -26,6 +26,7 @@ class _QuizPageState extends State<QuizPage> {
   late bool isDisplayTextSentence;
   bool isQuizGenerated=false;
   late final questions;
+  bool _answering = false;
   @override
   void initState() {
     super.initState();
@@ -148,6 +149,9 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   Future<void> _submitAnswer() async {
+    setState(() {
+      _answering = true;
+    });
     final currentQuestion = _questions[_currentQuestionIndex];
     final userAnswer = _answerController.text.trim();
 
@@ -263,6 +267,8 @@ class _QuizPageState extends State<QuizPage> {
                   setState(() {
                     _answerController.clear();
                     _currentQuestionIndex++;
+
+                      _answering = false;
 
                     if (_currentQuestionIndex < _questions.length) {
                       _loadQuestions(); // Bir sonraki soruyu yükle
@@ -415,10 +421,19 @@ class _QuizPageState extends State<QuizPage> {
                   labelStyle: AppUtilities.primaryTextStyleWhite,
                 ),
                 style: AppUtilities.primaryTextStyleWhiteXLarge,
+                onChanged: (newValue) {
+                  setState(() {
+
+                  });
+                },
               ),
+
               SizedBox(height: 16),
+              if (_answering)
+                CircularProgressIndicator()
+              else
               ElevatedButton(
-                onPressed: _submitAnswer,
+                onPressed: _answerController.text.isEmpty ? null: _submitAnswer,
                 child: Text('Cevapla'),
               ),
             ],

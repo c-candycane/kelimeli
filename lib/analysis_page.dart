@@ -1,6 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kelimeli/AppUtilities.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share/share.dart';
+import 'package:csv/csv.dart';
 import 'FirebaseUtilities.dart';
 import 'category_details_page.dart';
 
@@ -53,6 +57,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
     'Diğer',
   ];
 
+
   @override
   void initState() {
     super.initState();
@@ -71,8 +76,6 @@ class _AnalysisPageState extends State<AnalysisPage> {
         .get();
 
     final answers = querySnapshot.docs.map((doc) => Answer.fromDocument(doc)).toList();
-
-    // Kategorilere göre doğru ve toplam sayıları hesapla
     final categoryCounts = <String, int>{};
     final categoryCorrectCounts = <String, int>{};
 
@@ -116,11 +119,40 @@ class _AnalysisPageState extends State<AnalysisPage> {
     );
   }
 
+  Future<void> _exportToCsv() async {
+    List<List<String>> csvData = [
+      ['Kategori', 'Toplam Cevap Sayısı', 'Doğru Cevap Yüzdesi'],
+      for (var category in categories)
+        if (_categoryCounts.containsKey(category))
+          [
+            category,
+            _categoryCounts[category].toString(),
+            ((_categoryCorrectCounts[category] ?? 0) / (_categoryCounts[category] ?? 1) * 100).toStringAsFixed(2),
+          ],
+    ];
+
+    String csv = const ListToCsvConverter().convert(csvData);
+
+    final directory = await getApplicationDocumentsDirectory();
+    final path = "${directory.path}/analysis.csv";
+    final file = File(path);
+
+    await file.writeAsString(csv);
+
+    Share.shareFiles([path], text: 'Analiz CSV Dosyası');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Analiz'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.download),
+            onPressed: _exportToCsv,
+          ),
+        ],
       ),
       body: ListView(
         children: [

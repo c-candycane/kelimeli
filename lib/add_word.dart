@@ -7,8 +7,9 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:kelimeli/AppUtilities.dart';
-
+import 'package:flutter_tts/flutter_tts.dart';
 import 'FirebaseUtilities.dart';
+import 'package:path_provider/path_provider.dart';
 
 class AddWordScreen extends StatefulWidget {
   @override
@@ -52,6 +53,37 @@ class _AddWordScreenState extends State<AddWordScreen> {
   void dispose() {
     _playerStateSubscription.cancel();
     super.dispose();
+  }
+
+  Future<void> _generateSpeech() async {
+    FlutterTts flutterTts = FlutterTts();
+
+    // Ingilizce kelimeyi al
+    String englishWord = _englishController.text;
+
+    // Text-to-speech motorunu başlat
+    await flutterTts.setLanguage('en-US');
+    await flutterTts.setSpeechRate(0.4);
+    await flutterTts.setVolume(1.0);
+
+    // Ingilizce kelimeyi ses dosyasına dönüştür
+    Directory tempDir = await getTemporaryDirectory();
+    String tempPath = tempDir.path;
+    String audioFilePath = '$tempPath/${englishWord}_audio.mp3';
+
+    // Ses dosyasını oluştur
+    var result = await flutterTts.synthesizeToFile(englishWord, audioFilePath,);
+
+    if (result == 1) {
+      // Ses dosyası oluşturuldu, _audioUrl'e dosyanın yerel yolunu ata
+      setState(() {
+        _audioUrl = audioFilePath;
+        _selectedAudioFileName = 'english_word_audio.mp3'; // Örnek bir dosya adı
+      });
+    } else {
+      // Ses dosyası oluşturulamadı
+      print("Ses dosyası oluşturulamadı.");
+    }
   }
 
   Future<void> _getImage() async {
@@ -396,6 +428,13 @@ class _AddWordScreenState extends State<AddWordScreen> {
                 onPressed: _getAudio,
                 child: Text(_selectedAudioFileName ?? 'Ses Seç'),
               ),
+              SizedBox(height: 20),
+              ElevatedButton.icon(
+                onPressed: _generateSpeech,
+                icon: Icon(Icons.record_voice_over),
+                label: Text('Ses Oluştur'),
+              ),
+
               SizedBox(height: 20),
               _audioUrl != null
                   ? Column(
