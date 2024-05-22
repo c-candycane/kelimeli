@@ -65,7 +65,8 @@ Kelimeli is a mobile application designed to make your vocabulary learning proce
 
 **Analysis Screen**
 
-![image](https://github.com/c-candycane/kelimeli/assets/108942127/7cdb1cf8-bd78-4866-8c82-5f97fb4b8e89)
+![image](https://github.com/c-candycane/kelimeli/assets/108942127/d85311df-b5bc-4c50-ac39-280162bd70c5)
+
 
 
 ![image](https://github.com/c-candycane/kelimeli/assets/108942127/ee9ada07-9b30-46f3-9931-78446649eae8)
