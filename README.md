@@ -7,7 +7,9 @@ Kelimeli is a mobile application designed to make your vocabulary learning proce
 - **Add Words:** Users can add words and their meanings they want to learn.
 - **Quiz:** Users can take quizzes based on the words they have selected. The quiz is designed to be repeated at specific intervals.
 - **Analysis:** A section that analyzes the users' learning process and shows their progress.
-
+- **User Registration:** Users can create an account to save their progress.
+- **Google Sign-In:** Users can log in using their Google account.
+  
 ## Installation
 
 1. **Clone the repository:**
