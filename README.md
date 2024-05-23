@@ -9,6 +9,7 @@ Kelimeli is a mobile application designed to make your vocabulary learning proce
 - **Analysis:** A section that analyzes the users' learning process and shows their progress.
 - **User Registration:** Users can create an account to save their progress.
 - **Google Sign-In:** Users can log in using their Google account.
+- **Default Words:** The application provides 5 default words to get users started.
   
 ## Installation
 
