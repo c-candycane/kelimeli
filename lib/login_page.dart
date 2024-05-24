@@ -24,8 +24,8 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _isLoading = false;
   bool showPassword = false;
-  TextEditingController _emailController = TextEditingController(); // E-posta girişi için controller
-  TextEditingController _passwordController = TextEditingController(); // Şifre girişi için controller
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
 
   @override
   void initState() {
@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                               suffixIcon: GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    showPassword = !showPassword; // CheckBox işaretlendiğinde showPassword değerini tersine çevirin
+                                    showPassword = !showPassword;
                                   });
                                 },
                                 child: Icon(

@@ -29,7 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   bool showPassword = false;
 
-  bool showPasswordN= false; // Kullanıcı adını saklamak için değişken
+  bool showPasswordN= false;
 
   @override
   void initState() {
@@ -75,7 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         UserUtilities.signOut(context);
 
       } catch (e) {
-        // Şifre değiştirme işlemi başarısız olduysa kullanıcıyı bilgilendirin
+
         AppUtilities.showAlertDialog('Hata', 'Mevcut şifre yanlış. Lütfen doğru şifreyi girin.', context);
 
       }
