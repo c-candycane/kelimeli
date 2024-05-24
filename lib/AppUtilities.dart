@@ -1,7 +1,9 @@
-
+import 'dart:io';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter/material.dart';
-
+import 'package:path_provider/path_provider.dart';
 import 'login_page.dart';
+
 class AppUtilities {
   static const String appName = "Kelimeli";
   static const Color backgroundColor = Color.fromRGBO(31, 44, 55, 1);
@@ -90,6 +92,7 @@ class AppUtilities {
     );
   }
 
+
   static void showAlertDialogAndNavigate(String title, String message, String page, String pageMessage,context) {
     showDialog(
       context: context,
@@ -126,6 +129,37 @@ class AppUtilities {
         );
       },
     );
+  }
+
+  static Future<List<String>> generateSpeech(String text) async {
+    FlutterTts flutterTts = FlutterTts();
+
+
+
+
+
+    await flutterTts.setLanguage('en-US');
+    await flutterTts.setSpeechRate(0.4);
+    await flutterTts.setVolume(1.0);
+
+    Directory tempDir = await getTemporaryDirectory();
+    String tempPath = tempDir.path;
+    String audioFilePath = '$tempPath/${text}_audio.mp3';
+
+
+    var result = await flutterTts.synthesizeToFile(text, audioFilePath,);
+
+    if (result == 1) {
+
+       String _audioUrl = audioFilePath;
+       String _audioFileName = '${text}_audio.mp3';
+
+       return [_audioUrl, _audioFileName];
+
+    } else {
+      print("Ses dosyası oluşturulamadı.");
+      return ["null"];
+    }
   }
   
 }
