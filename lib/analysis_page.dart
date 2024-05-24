@@ -38,24 +38,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
   List<Answer> _answers = [];
   late Map<String, int> _categoryCounts = {};
   late Map<String, int> _categoryCorrectCounts = {};
-  final categories = [
-    'Hayvanlar',
-    'Renkler',
-    'Yiyecekler',
-    'Meslekler',
-    'Giysiler',
-    'Ulaşım Araçları',
-    'Mutfak Eşyaları',
-    'Doğa Elementleri',
-    'Saatler ve Zaman',
-    'Ev Eşyaları',
-    'Meyve ve Sebzeler',
-    'Vücut Parçaları',
-    'Sporlar',
-    'Mekanlar',
-    'Müzik Aletleri',
-    'Diğer',
-  ];
+
 
 
   @override
@@ -122,7 +105,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
   Future<void> _exportToCsv() async {
     List<List<String>> csvData = [
       ['Kategori', 'Toplam Cevap Sayısı', 'Doğru Cevap Yüzdesi'],
-      for (var category in categories)
+      for (var category in AppUtilities.categories)
         if (_categoryCounts.containsKey(category))
           [
             category,
@@ -156,7 +139,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
       ),
       body: ListView(
         children: [
-          for (var category in categories)
+          for (var category in AppUtilities.categories)
             if (_categoryCounts.containsKey(category))
               GestureDetector(
                 onTap: () => _openCategoryDetails(category),
