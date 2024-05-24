@@ -135,9 +135,6 @@ class AppUtilities {
     FlutterTts flutterTts = FlutterTts();
 
 
-
-
-
     await flutterTts.setLanguage('en-US');
     await flutterTts.setSpeechRate(0.4);
     await flutterTts.setVolume(1.0);
@@ -161,5 +158,25 @@ class AppUtilities {
       return ["null"];
     }
   }
-  
+
+  static final List<String> categories = [
+    'Hayvanlar',
+    'Renkler',
+    'Yiyecekler',
+    'Meslekler',
+    'Giysiler',
+    'Ulaşım Araçları',
+    'Mutfak Eşyaları',
+    'Doğa Elementleri',
+    'Saatler ve Zaman',
+    'Ev Eşyaları',
+    'Meyve ve Sebzeler',
+    'Vücut Parçaları',
+    'Sporlar',
+    'Mekanlar',
+    'Müzik Aletleri',
+    'Diğer'
+  ];
+
+
 }
