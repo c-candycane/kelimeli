@@ -42,6 +42,18 @@ Kelimeli is a mobile application designed to make your vocabulary learning proce
 **Question:** A question will be displayed on the screen. Enter the answer in the provided field.
 **Submit Answer:** Tap on the "Submit" button to submit your answer. You will receive feedback on whether your answer is correct or incorrect.  
 **Next Question:** After answering, proceed to the next question. Continue until all questions are answered.
+
+**6-Step Word Learning Process**  
+The quiz is designed to help users learn words through a 6-step process. The intervals for quiz repetition are based on the stage of the word:
+
+**Stage 1:** Immediate testing.  
+**Stage 2:** Test after 1 day.  
+**Stage 3:** Test after 7 days.  
+**Stage 4:** Test after 30 days.  
+**Stage 5:** Test after 90 days.  
+**Stage 6:** Test after 180 days.  
+**Stage 7:** Test after 365 days.  
+
 ## ANALYSIS
 **Navigate to Analysis Screen:** Tap on the "Analysis" button on the main screen.  
 **Progress:** View your percentage of correct answers by category. When you click on the category, you can view detailed analysis of the words in that category.  
