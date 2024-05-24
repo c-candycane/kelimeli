@@ -52,7 +52,7 @@ class _QuizPageState extends State<QuizPage> {
     final now = DateTime.now();
     final firestore = FirebaseFirestore.instance;
 
-    // Kullanıcının belirlediği soru sayısını almak için Firestore'dan veriyi getir
+
     final userDocSnapshot = await firestore.collection('users').doc(userUid).get();
     if (!userDocSnapshot.exists) return [];
 
@@ -207,14 +207,11 @@ class _QuizPageState extends State<QuizPage> {
         }
       }
 
-      // Cevap bilgilerini 'answers' koleksiyonunda güncelle veya ekle
       final answerDocRef = firestore.collection('users').doc(userUid).collection('answers').doc(currentQuestion['id']);
 
-      // Mevcut cevap bilgilerini al
       final answerSnapshot = await answerDocRef.get();
 
       if (answerSnapshot.exists) {
-        // Mevcut cevap bilgilerini güncelle
         await answerDocRef.update({
           'questionId': currentQuestion['id'],
           'isCorrect': isCorrect,
@@ -227,7 +224,6 @@ class _QuizPageState extends State<QuizPage> {
               : answerSnapshot.data()?['wrongCount'] ?? 0,
         });
       } else {
-        // Yeni cevap bilgisi ekle
         await answerDocRef.set({
           'questionId': currentQuestion['id'],
           'isCorrect': isCorrect,
@@ -271,7 +267,7 @@ class _QuizPageState extends State<QuizPage> {
                       _answering = false;
 
                     if (_currentQuestionIndex < _questions.length) {
-                      _loadQuestions(); // Bir sonraki soruyu yükle
+                      _loadQuestions();
                     }
                   });
                 },
