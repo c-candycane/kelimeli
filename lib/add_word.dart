@@ -23,7 +23,7 @@ class _AddWordScreenState extends State<AddWordScreen> {
   List<TextEditingController> _englishSentenceControllers = [
     TextEditingController(),
     TextEditingController()
-  ]; // İlk iki cümle kontrolcüsü
+  ]; 
   File? _image;
   String? _imageUrl;
   String? _audioUrl;
@@ -56,34 +56,14 @@ class _AddWordScreenState extends State<AddWordScreen> {
   }
 
   Future<void> _generateSpeech() async {
-    FlutterTts flutterTts = FlutterTts();
 
-    // Ingilizce kelimeyi al
+
     String englishWord = _englishController.text;
-
-    // Text-to-speech motorunu başlat
-    await flutterTts.setLanguage('en-US');
-    await flutterTts.setSpeechRate(0.4);
-    await flutterTts.setVolume(1.0);
-
-    // Ingilizce kelimeyi ses dosyasına dönüştür
-    Directory tempDir = await getTemporaryDirectory();
-    String tempPath = tempDir.path;
-    String audioFilePath = '$tempPath/${englishWord}_audio.mp3';
-
-    // Ses dosyasını oluştur
-    var result = await flutterTts.synthesizeToFile(englishWord, audioFilePath,);
-
-    if (result == 1) {
-      // Ses dosyası oluşturuldu, _audioUrl'e dosyanın yerel yolunu ata
-      setState(() {
-        _audioUrl = audioFilePath;
-        _selectedAudioFileName = 'english_word_audio.mp3'; // Örnek bir dosya adı
-      });
-    } else {
-      // Ses dosyası oluşturulamadı
-      print("Ses dosyası oluşturulamadı.");
-    }
+    List<String> file_values = await AppUtilities.generateSpeech(englishWord);
+    setState(() {
+      _audioUrl = file_values[0];
+      _selectedAudioFileName = file_values[1];
+    });
   }
 
   Future<void> _getImage() async {
@@ -110,7 +90,7 @@ class _AddWordScreenState extends State<AddWordScreen> {
         _audioUrl = file.path;
         _selectedAudioFileName = file.path
             .split('/')
-            .last; // Dosya adını alın
+            .last;
       });
     }
   }
@@ -121,7 +101,7 @@ class _AddWordScreenState extends State<AddWordScreen> {
     String englishWord = _englishController.text.toLowerCase();
     List<String> englishSentences = _englishSentenceControllers.map((controller) => controller.text).toList();
 
-    // Noktalama işaretlerini kaldır ve her cümlenin İngilizce kelimeyi içerip içermediğini kontrol et
+
     for (int i = 0; i < englishSentences.length; i++) {
       String sanitizedSentence = englishSentences[i].replaceAll(RegExp(r'[^\w\s]'), '').toLowerCase();
       if (!sanitizedSentence.contains(englishWord)) {
@@ -162,7 +142,7 @@ class _AddWordScreenState extends State<AddWordScreen> {
         'turkish': _turkishController.text,
         'imageUrl': _imageUrl,
         'audioUrl': _audioUrl,
-        'englishSentences': englishSentences, // İngilizce cümleleri ekleyin
+        'englishSentences': englishSentences,
         'stage': 1,
         'lastKnownTime': null,
         'category': _selectedCategory
@@ -250,7 +230,7 @@ class _AddWordScreenState extends State<AddWordScreen> {
     });
   }
 
-  // Belirli bir İngilizce cümle alanını kaldırmak için method
+
   void _removeEnglishSentenceField(int index) {
     if (_englishSentenceControllers.length > 2) {
       setState(() {
@@ -314,7 +294,7 @@ class _AddWordScreenState extends State<AddWordScreen> {
                 style: AppUtilities.primaryTextStyleWhite,
               ),
               SizedBox(height: 20),
-              // Diğer form alanları buraya eklenecek
+
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
                 items: [
