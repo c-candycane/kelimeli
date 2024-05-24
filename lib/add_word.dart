@@ -7,9 +7,8 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:kelimeli/AppUtilities.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'FirebaseUtilities.dart';
-import 'package:path_provider/path_provider.dart';
+
 
 class AddWordScreen extends StatefulWidget {
   @override
@@ -297,24 +296,7 @@ class _AddWordScreenState extends State<AddWordScreen> {
 
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
-                items: [
-                  'Hayvanlar',
-                  'Renkler',
-                  'Yiyecekler',
-                  'Meslekler',
-                  'Giysiler',
-                  'Ulaşım Araçları',
-                  'Mutfak Eşyaları',
-                  'Doğa Elementleri',
-                  'Saatler ve Zaman',
-                  'Ev Eşyaları',
-                  'Meyve ve Sebzeler',
-                  'Vücut Parçaları',
-                  'Sporlar',
-                  'Mekanlar',
-                  'Müzik Aletleri',
-                  'Diğer'
-                ].map((String category) {
+                items: AppUtilities.categories.map((String category) {
                   return DropdownMenuItem<String>(
                     value: category,
                     child: Text(category),
